@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">News Article Search</string>
+    <string name="action_settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="title_activity_article">Selected Article</string>
+    <string name="title_activity_settings">News Article Search Settings</string>
+    <string name="save">Save</string>
+    <string name="sort_by">Sort by:</string>
+    <string name="newest">Newest</string>
+    <string name="oldest">Oldest</string>
+    <string name="news_desk">News Desk:</string>
+    <string name="all_values">All values</string>
+    <string name="select_values">Select</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="begin_date">Begin date:</string>
+    <string name="end_date">End date:</string>
+    <string name="all_dates">All dates</string>
+    <string name="today">Today</string>
+    <string name="select_dates">Select dates</string>
+</resources>
