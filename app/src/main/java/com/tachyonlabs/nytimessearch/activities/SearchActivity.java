@@ -21,6 +21,7 @@ import com.loopj.android.http.RequestParams;
 import com.tachyonlabs.nytimessearch.R;
 import com.tachyonlabs.nytimessearch.adapters.ArticlesAdapter;
 import com.tachyonlabs.nytimessearch.models.Article;
+import com.tachyonlabs.nytimessearch.utils.EndlessRecyclerViewScrollListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +38,7 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerView rvResults;
     ArrayList<Article> articles;
     ArticlesAdapter adapter;
-    String previousQuery;
+    String searchQuery;
     private final int REQUEST_CODE = 20;
     String beginDate;
     String endDate;
@@ -83,6 +84,28 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        rvResults.addOnScrollListener(new EndlessRecyclerViewScrollListener(gridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                customLoadMoreDataFromApi(page);
+            }
+        });
+    }
+
+    // Append more data into the adapter
+    // This method probably sends out a network request and appends new data items to your adapter.
+    public void customLoadMoreDataFromApi(int offset) {
+        // Send an API request to retrieve appropriate data using the offset value as a parameter.
+        // Deserialize API response and then construct new objects to append to the adapter
+        // Add the new objects to the data source for the adapter
+        //items.addAll(moreItems);
+        // For efficiency purposes, notify the adapter of only the elements that got changed
+        // curSize will equal to the index of the first element inserted because the list is 0-indexed
+        fetchArticles(offset);
+        //int curSize = adapter.getItemCount();
+        //adapter.notifyItemRangeInserted(curSize, items.size() - 1);
     }
 
     public void getSharedPreferencesSettings() {
@@ -98,74 +121,24 @@ public class SearchActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        final ImageView ivSplash = (ImageView) findViewById(R.id.ivSplash);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        previousQuery = "";
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                int currentArticleCount = adapter.getItemCount();
-                if (currentArticleCount > 0 && !query.equals(previousQuery)) {
-                    // clear previous search results
-                    articles.clear();
-                    // and notify the adapter
-                    adapter.notifyItemRangeRemoved(0, currentArticleCount);
-                }
-
-                previousQuery = query;
-
-                AsyncHttpClient client = new AsyncHttpClient();
-                String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
-                RequestParams params = new RequestParams();
-                params.put("api-key", "693d518cc15a1c220a4a1490ef49bdbc:10:23377");
-                params.put("begin_date", convertToday(beginDate));
-                params.put("end_date", convertToday(endDate));
-                params.put("sort", sortOrder);
-                params.put("page", 0);
-                params.put("q", query);
-                if (!allNewsDeskValues) {
-                    // assemble the news desk filters
-                    String newDeskFilters = "news_desk:(";
-                    if (newsDeskArtsSelected) {
-                        newDeskFilters += "\"Arts\" ";
-                    }
-                    if (newsDeskFashionAndStyleSelected) {
-                        newDeskFilters += "\"Fashion & Style\" ";
-                    }
-                    if (newsDeskSportsSelected) {
-                        newDeskFilters += "\"Sports\" ";
-                    }
-                    newDeskFilters += ")";
-                    params.put("fq", newDeskFilters);
-                }
-
-                client.get(url, params, new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        //super.onSuccess(statusCode, headers, response);
-                        JSONArray articleJsonResults = null;
-
-                        try {
-                            articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                            int previousArticlesLength = articles.size();
-                            articles.addAll(Article.fromJSONArray(articleJsonResults));
-                            adapter.notifyItemRangeInserted(previousArticlesLength, articleJsonResults.length());
-                            // once there are search results, remove the splash and show the grid
-                            rvResults.setVisibility(View.VISIBLE);
-                            ivSplash.setVisibility(View.GONE);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
                 searchView.clearFocus();
+                int currentArticleCount = adapter.getItemCount();
+                // clear previous search results
+                articles.clear();
+                // and notify the adapter
+                adapter.notifyItemRangeRemoved(0, currentArticleCount);
 
+                searchQuery = query;
+                fetchArticles(0);
                 return true;
             }
 
@@ -177,6 +150,57 @@ public class SearchActivity extends AppCompatActivity {
 
         return super.onCreateOptionsMenu(menu);
     }
+
+    private void fetchArticles(int page) {
+        final ImageView ivSplash = (ImageView) findViewById(R.id.ivSplash);
+        AsyncHttpClient client = new AsyncHttpClient();
+        String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
+        RequestParams params = new RequestParams();
+        params.put("api-key", "693d518cc15a1c220a4a1490ef49bdbc:10:23377");
+        params.put("begin_date", convertToday(beginDate));
+        params.put("end_date", convertToday(endDate));
+        params.put("sort", sortOrder);
+        params.put("page", page);
+        params.put("q", searchQuery);
+        if (!allNewsDeskValues) {
+            // assemble the news desk filters
+            String newDeskFilters = "news_desk:(";
+            if (newsDeskArtsSelected) {
+                newDeskFilters += "\"Arts\" ";
+            }
+            if (newsDeskFashionAndStyleSelected) {
+                newDeskFilters += "\"Fashion & Style\" ";
+            }
+            if (newsDeskSportsSelected) {
+                newDeskFilters += "\"Sports\" ";
+            }
+            newDeskFilters += ")";
+            params.put("fq", newDeskFilters);
+        }
+
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                //super.onSuccess(statusCode, headers, response);
+                JSONArray articleJsonResults = null;
+
+                try {
+                    articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
+                    int previousArticlesLength = articles.size();
+                    articles.addAll(Article.fromJSONArray(articleJsonResults));
+                    adapter.notifyItemRangeInserted(previousArticlesLength, articleJsonResults.length());
+                    // once there are search results, remove the splash and show the grid
+                    rvResults.setVisibility(View.VISIBLE);
+                    ivSplash.setVisibility(View.GONE);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
