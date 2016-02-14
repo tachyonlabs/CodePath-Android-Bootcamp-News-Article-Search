@@ -23,12 +23,16 @@ The following **optional** features are implemented:
 * [x] Used the **ActionBar SearchView** or custom layout as the query box instead of an EditText
 * [x] Improved the user interface and experiment with image assets and/or styling and coloring
 
+The following **bonus** features are implemented:
+
+* [x] Use the [RecyclerView](http://guides.codepath.com/android/Using-the-RecyclerView) with the `StaggeredGridLayoutManager` to display improve the grid of image results
+
 The following **additional** features are implemented:
 
 * [x] Placeholder NYT "T" logo image in grid for articles that have no thumbnails
 * [x] Opening "The New York Times Article Search" graphic so you don't just have a blank screen prior to searching
 * [x] User's **search filters are saved to SharedPreferences**
-* [x] Alert dialog ensures that users choosing Select news desk values (as opposed to All values) are also required to select the departments they want to search 
+* [x] Alert dialog requiring users choosing Select news desk values (as opposed to All values) to also select the departments they want to search 
 
 ## Video Walkthrough
 

@@ -5,21 +5,21 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.tachyonlabs.nytimessearch.R;
-import com.tachyonlabs.nytimessearch.adapters.ArticleArrayAdapter;
+import com.tachyonlabs.nytimessearch.adapters.ArticlesAdapter;
 import com.tachyonlabs.nytimessearch.models.Article;
 
 import org.json.JSONArray;
@@ -34,9 +34,9 @@ import java.util.Date;
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
-    GridView gvResults;
+    RecyclerView rvResults;
     ArrayList<Article> articles;
-    ArticleArrayAdapter adapter;
+    ArticlesAdapter adapter;
     private final int REQUEST_CODE = 20;
     String beginDate;
     String endDate;
@@ -57,14 +57,19 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void setupViews() {
-        gvResults = (GridView) findViewById(R.id.gvResults);
+        rvResults = (RecyclerView) findViewById(R.id.rvResults);
         articles = new ArrayList<>();
-        adapter = new ArticleArrayAdapter(this, articles);
-        gvResults.setAdapter(adapter);
+        adapter = new ArticlesAdapter(articles);
+        rvResults.setAdapter(adapter);
+        // Set layout manager to position the items
+        // First param is number of columns and second param is orientation i.e Vertical or Horizontal
+        StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
+        // Attach the layout manager to the recycler view
+        rvResults.setLayoutManager(gridLayoutManager);
         // hook up listener for grid click
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        adapter.setOnItemClickListener(new ArticlesAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            public void onItemClick(View view, int position) {
                 // create an intent to display the article
                 Intent intent = new Intent(getApplicationContext(), ArticleActivity.class);
                 // get the article to display
@@ -99,7 +104,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // clear previous search results
-                adapter.clear();
+                // adapter.clear();
 
                 AsyncHttpClient client = new AsyncHttpClient();
                 String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
@@ -109,17 +114,9 @@ public class SearchActivity extends AppCompatActivity {
                 params.put("end_date", convertToday(endDate));
                 params.put("sort", sortOrder);
                 params.put("page", 0);
-//                if (allNewsDeskValues) {
-//                    params.put("q", query);
-//                } else {
-//                    params.put("fq", query);
-//
-//                    // stuff here to assemble the news desk query
-//                }
                 params.put("q", query);
                 if (!allNewsDeskValues) {
                     // assemble the news desk filters
-                    // "news_desk:(\"Fashion & Style\")");
                     String newDeskFilters = "news_desk:(";
                     if (newsDeskArtsSelected) {
                         newDeskFilters += "\"Arts\" ";
@@ -142,9 +139,10 @@ public class SearchActivity extends AppCompatActivity {
 
                         try {
                             articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                            adapter.addAll(Article.fromJSONArray(articleJsonResults));
+                            articles.addAll(Article.fromJSONArray(articleJsonResults));
+                            adapter.notifyDataSetChanged();
                             // once there are search results, remove the splash and show the grid
-                            gvResults.setVisibility(View.VISIBLE);
+                            rvResults.setVisibility(View.VISIBLE);
                             ivSplash.setVisibility(View.GONE);
 
                         } catch (JSONException e) {
