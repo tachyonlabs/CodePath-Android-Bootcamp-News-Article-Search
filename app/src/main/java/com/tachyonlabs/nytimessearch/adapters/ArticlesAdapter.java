@@ -22,9 +22,12 @@ import java.util.List;
 public class ArticlesAdapter extends
         RecyclerView.Adapter<ArticlesAdapter.ViewHolder> {
 
-    /***** Creating OnItemClickListener *****/
+    /*****
+     * Creating OnItemClickListener
+     *****/
     // Define listener member variable
     private static OnItemClickListener listener;
+
     // Define the listener interface
     public interface OnItemClickListener {
         void onItemClick(View itemView, int position);
@@ -92,13 +95,12 @@ public class ArticlesAdapter extends
         TextView tvTitle = viewHolder.tvTitle;
         tvTitle.setText(article.getHeadline());
 
-        ImageView ivImage = viewHolder.ivImage;
-
         // populate the thumbnail image
         // remotely download
+        ImageView ivImage = viewHolder.ivImage;
         String thumbnail = article.getThumbnail();
         if (!TextUtils.isEmpty(thumbnail)) {
-            Picasso.with(viewHolder.ivImage.getContext()).load(thumbnail).fit().into(ivImage);
+            Picasso.with(viewHolder.ivImage.getContext()).load(thumbnail).fit().centerCrop().into(ivImage);
         } else {
             Picasso.with(viewHolder.ivImage.getContext()).load(R.drawable.placeholder).fit().into(ivImage);
         }

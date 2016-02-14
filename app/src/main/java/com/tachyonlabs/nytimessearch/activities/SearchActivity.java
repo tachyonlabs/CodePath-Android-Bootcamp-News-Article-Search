@@ -37,6 +37,7 @@ public class SearchActivity extends AppCompatActivity {
     RecyclerView rvResults;
     ArrayList<Article> articles;
     ArticlesAdapter adapter;
+    String previousQuery;
     private final int REQUEST_CODE = 20;
     String beginDate;
     String endDate;
@@ -64,6 +65,8 @@ public class SearchActivity extends AppCompatActivity {
         // Set layout manager to position the items
         // First param is number of columns and second param is orientation i.e Vertical or Horizontal
         StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
+        // following tip #10, stop article results from jumping around in the grid
+        gridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         // Attach the layout manager to the recycler view
         rvResults.setLayoutManager(gridLayoutManager);
         // hook up listener for grid click
@@ -100,11 +103,19 @@ public class SearchActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_search, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        previousQuery = "";
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // clear previous search results
-                // adapter.clear();
+                int currentArticleCount = adapter.getItemCount();
+                if (currentArticleCount > 0 && !query.equals(previousQuery)) {
+                    // clear previous search results
+                    articles.clear();
+                    // and notify the adapter
+                    adapter.notifyItemRangeRemoved(0, currentArticleCount);
+                }
+
+                previousQuery = query;
 
                 AsyncHttpClient client = new AsyncHttpClient();
                 String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
@@ -139,8 +150,9 @@ public class SearchActivity extends AppCompatActivity {
 
                         try {
                             articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
+                            int previousArticlesLength = articles.size();
                             articles.addAll(Article.fromJSONArray(articleJsonResults));
-                            adapter.notifyDataSetChanged();
+                            adapter.notifyItemRangeInserted(previousArticlesLength, articleJsonResults.length());
                             // once there are search results, remove the splash and show the grid
                             rvResults.setVisibility(View.VISIBLE);
                             ivSplash.setVisibility(View.GONE);

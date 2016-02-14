@@ -31,7 +31,7 @@ The following **additional** features are implemented:
 
 * [x] Placeholder NYT "T" logo image in grid for articles that have no thumbnails
 * [x] Opening "The New York Times Article Search" graphic so you don't just have a blank screen prior to searching
-* [x] User's **search filters are saved to SharedPreferences**
+* [x] User's **search filters are saved to and loaded from SharedPreferences**
 * [x] Alert dialog requiring users choosing Select news desk values (as opposed to All values) to also select the departments they want to search 
 
 ## Video Walkthrough
