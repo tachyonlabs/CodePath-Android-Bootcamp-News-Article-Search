@@ -9,14 +9,17 @@
     <string name="newest">Newest</string>
     <string name="oldest">Oldest</string>
     <string name="news_desk">News Desk:</string>
-    <string name="all_values">All values</string>
-    <string name="select_values">Select</string>
+    <string name="all_values">All depts.</string>
+    <string name="select_values">Select depts.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="begin_date">Begin date:</string>
     <string name="end_date">End date:</string>
-    <string name="all_dates">All dates</string>
+    <string name="earliest_datepicker_date">19000201</string>
     <string name="today">Today</string>
     <string name="select_dates">Select dates</string>
+    <string name="arts">Arts</string>
+    <string name="fashion_and_style"><![CDATA[Fashion & Style]]></string>
+    <string name="sports">Sports</string>
 </resources>

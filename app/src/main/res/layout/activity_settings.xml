@@ -76,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/rgNewsDesk"
+        android:id="@+id/rdgSortBy"
         android:layout_alignTop="@id/tvSortBy"
         android:layout_marginTop="-6dp"
         android:layout_alignLeft="@+id/etBeginDate"
@@ -94,6 +94,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginLeft="-6dp"
             android:text="@string/oldest"
             android:id="@+id/rdbOldest" />
 
@@ -117,8 +118,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="-6dp"
-        android:id="@+id/rgSections"
-        android:layout_alignLeft="@id/rgNewsDesk"
+        android:id="@+id/rdgNewsDesk"
+        android:layout_alignLeft="@id/rdgSortBy"
         android:layout_alignTop="@id/tvNewsDesk"
         android:layout_alignParentRight="true">
 
@@ -129,16 +130,49 @@
             android:text="@string/all_values"
             android:id="@+id/rdbAll"
             android:checked="true"
-            android:layout_alignLeft="@+id/rgSections" />
+            android:layout_alignLeft="@+id/rdgNewsDesk" />
 
         <RadioButton
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginLeft="-6dp"
             android:text="@string/select_values"
             android:id="@+id/rdbSelect" />
 
     </RadioGroup>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/arts"
+        android:id="@+id/chkArts"
+        android:layout_below="@+id/rdgNewsDesk"
+        android:checked="false"
+        android:layout_toRightOf="@+id/btnSave"
+        android:visibility="invisible" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/fashion_and_style"
+        android:id="@+id/chkFashionAndStyle"
+        android:layout_below="@+id/chkArts"
+        android:layout_alignLeft="@+id/chkArts"
+        android:layout_alignStart="@+id/chkArts"
+        android:visibility="invisible"
+        android:checked="false" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sports"
+        android:id="@+id/chkSports"
+        android:layout_below="@+id/chkFashionAndStyle"
+        android:layout_alignLeft="@+id/chkFashionAndStyle"
+        android:layout_alignStart="@+id/chkFashionAndStyle"
+        android:visibility="invisible"
+        android:checked="false" />
 
     <Button
         android:layout_width="wrap_content"

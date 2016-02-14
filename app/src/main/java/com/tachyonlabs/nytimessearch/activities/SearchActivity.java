@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -27,7 +26,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -39,7 +41,10 @@ public class SearchActivity extends AppCompatActivity {
     String beginDate;
     String endDate;
     String sortOrder;
-    String newsDeskValues;
+    boolean allNewsDeskValues;
+    boolean newsDeskArtsSelected;
+    boolean newsDeskFashionAndStyleSelected;
+    boolean newsDeskSportsSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,7 @@ public class SearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupViews();
-        getSettings();
+        getSharedPreferencesSettings();
     }
 
     public void setupViews() {
@@ -72,11 +77,15 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    public void getSettings() {
+    public void getSharedPreferencesSettings() {
         SharedPreferences mSettings = this.getSharedPreferences("Settings", 0);
-        beginDate = mSettings.getString("beginDate", getResources().getString(R.string.all_dates));
+        beginDate = mSettings.getString("beginDate", getResources().getString(R.string.earliest_datepicker_date));
         endDate = mSettings.getString("endDate", getResources().getString(R.string.today));
         sortOrder = mSettings.getString("sortOrder", "newest");
+        allNewsDeskValues = mSettings.getBoolean("allNewsDeskValues", true);
+        newsDeskArtsSelected = mSettings.getBoolean("newsDeskArtsSelected", false);
+        newsDeskFashionAndStyleSelected = mSettings.getBoolean("newsDeskFashionAndStyleSelected", false);
+        newsDeskSportsSelected = mSettings.getBoolean("newsDeskSportsSelected", false);
     }
 
     @Override
@@ -89,7 +98,6 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(SearchActivity.this, query, Toast.LENGTH_SHORT).show();
                 // clear previous search results
                 adapter.clear();
 
@@ -97,12 +105,34 @@ public class SearchActivity extends AppCompatActivity {
                 String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
                 RequestParams params = new RequestParams();
                 params.put("api-key", "693d518cc15a1c220a4a1490ef49bdbc:10:23377");
-//                if (!beginDate.equals("none")) {
-//                    params.put("begin_date", beginDate);
-//                }
+                params.put("begin_date", convertToday(beginDate));
+                params.put("end_date", convertToday(endDate));
                 params.put("sort", sortOrder);
                 params.put("page", 0);
+//                if (allNewsDeskValues) {
+//                    params.put("q", query);
+//                } else {
+//                    params.put("fq", query);
+//
+//                    // stuff here to assemble the news desk query
+//                }
                 params.put("q", query);
+                if (!allNewsDeskValues) {
+                    // assemble the news desk filters
+                    // "news_desk:(\"Fashion & Style\")");
+                    String newDeskFilters = "news_desk:(";
+                    if (newsDeskArtsSelected) {
+                        newDeskFilters += "\"Arts\" ";
+                    }
+                    if (newsDeskFashionAndStyleSelected) {
+                        newDeskFilters += "\"Fashion & Style\" ";
+                    }
+                    if (newsDeskSportsSelected) {
+                        newDeskFilters += "\"Sports\" ";
+                    }
+                    newDeskFilters += ")";
+                    params.put("fq", newDeskFilters);
+                }
 
                 client.get(url, params, new JsonHttpResponseHandler() {
                     @Override
@@ -133,11 +163,9 @@ public class SearchActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 return false;
             }
-
         });
 
         return super.onCreateOptionsMenu(menu);
-
     }
 
     @Override
@@ -153,6 +181,10 @@ public class SearchActivity extends AppCompatActivity {
             intent.putExtra("beginDate", beginDate);
             intent.putExtra("endDate", endDate);
             intent.putExtra("sortOrder", sortOrder);
+            intent.putExtra("allNewsDeskValues", allNewsDeskValues);
+            intent.putExtra("newsDeskArtsSelected", newsDeskArtsSelected);
+            intent.putExtra("newsDeskFashionAndStyleSelected", newsDeskFashionAndStyleSelected);
+            intent.putExtra("newsDeskSportsSelected", newsDeskSportsSelected);
             startActivityForResult(intent, REQUEST_CODE);
             return true;
         }
@@ -167,12 +199,32 @@ public class SearchActivity extends AppCompatActivity {
             sortOrder = data.getExtras().getString("sortOrder");
             beginDate = data.getExtras().getString("beginDate");
             endDate = data.getExtras().getString("endDate");
+            allNewsDeskValues = data.getExtras().getBoolean("allNewsDeskValues");
+            newsDeskArtsSelected = data.getExtras().getBoolean("newsDeskArtsSelected");
+            newsDeskFashionAndStyleSelected = data.getExtras().getBoolean("newsDeskFashionAndStyleSelected");
+            newsDeskSportsSelected = data.getExtras().getBoolean("newsDeskSportsSelected");
             SharedPreferences mSettings = this.getSharedPreferences("Settings", 0);
             SharedPreferences.Editor editor = mSettings.edit();
             editor.putString("sortOrder", sortOrder);
             editor.putString("beginDate", beginDate);
             editor.putString("endDate", endDate);
+            editor.putBoolean("allNewsDeskValues", allNewsDeskValues);
+            editor.putBoolean("newsDeskArtsSelected", newsDeskArtsSelected);
+            editor.putBoolean("newsDeskFashionAndStyleSelected", newsDeskFashionAndStyleSelected);
+            editor.putBoolean("newsDeskSportsSelected", newsDeskSportsSelected);
             editor.commit();
         }
+    }
+
+    public String convertToday(String dateString) {
+        if (dateString.equals(getResources().getString(R.string.today))) {
+            Calendar c = Calendar.getInstance();
+            Date date = c.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            return sdf.format(date);
+        } else {
+            return dateString;
+        }
+
     }
 }

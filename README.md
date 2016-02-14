@@ -12,7 +12,7 @@ The following **required** functionality is completed:
 * [x] User can click on "settings" which allows selection of **advanced search options** to filter results
 * [x] User can configure advanced search filters such as:
   * [x] Begin Date (using a date picker)
-  * [ ] News desk values (Arts, Fashion & Style, Sports)
+  * [x] News desk values (Arts, Fashion & Style, Sports)
   * [x] Sort order (oldest or newest)
 * [x] Subsequent searches have any filters applied to the search results
 * [x] User can tap on any image in results to see the full text of article **full-screen**
@@ -28,6 +28,7 @@ The following **additional** features are implemented:
 * [x] Placeholder NYT "T" logo image in grid for articles that have no thumbnails
 * [x] Opening "The New York Times Article Search" graphic so you don't just have a blank screen prior to searching
 * [x] User's **search filters are saved to SharedPreferences**
+* [x] Alert dialog ensures that users choosing Select news desk values (as opposed to All values) are also required to select the departments they want to search 
 
 ## Video Walkthrough
 
