@@ -30,6 +30,7 @@ The following **bonus** features are implemented:
 The following **additional** features are implemented:
 
 * [x] Placeholder NYT "T" logo image in grid for articles that have no thumbnails
+* [x] User can set **End Date in addition to Begin Date**
 * [x] User's **search filters are saved to and loaded from SharedPreferences**
 * [x] Alert dialog requiring users choosing Select news desk values (as opposed to All values) to also select the departments they want to search 
 
