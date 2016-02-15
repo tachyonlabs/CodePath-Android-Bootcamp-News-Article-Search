@@ -36,6 +36,7 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
         setContentView(R.layout.activity_settings);
         EditText etBeginDate = (EditText) findViewById(R.id.etBeginDate);
         EditText etEndDate = (EditText) findViewById(R.id.etEndDate);
+        // update the views with the stored user settings
         beginDate = getIntent().getStringExtra("beginDate");
         endDate = getIntent().getStringExtra("endDate");
         etBeginDate.setText(yyyymmddToLongDate(beginDate));
@@ -53,13 +54,13 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
         CheckBox chkSports = (CheckBox) findViewById(R.id.chkSports);
         allNewsDeskValues = getIntent().getBooleanExtra("allNewsDeskValues", true);
         if (allNewsDeskValues) {
-            RadioButton rdbAll = (RadioButton) findViewById(R.id.rdbAll);
+            RadioButton rdbAll = (RadioButton) findViewById(R.id.rdbAllNewsDesks);
             rdbAll.setChecked(true);
             chkArts.setVisibility(View.INVISIBLE);
             chkFashionAndStyle.setVisibility(View.INVISIBLE);
             chkSports.setVisibility(View.INVISIBLE);
         } else {
-            RadioButton rdbSelect = (RadioButton) findViewById(R.id.rdbSelect);
+            RadioButton rdbSelect = (RadioButton) findViewById(R.id.rdbSelectNewsDesks);
             rdbSelect.setChecked(true);
             chkArts.setVisibility(View.VISIBLE);
             chkFashionAndStyle.setVisibility(View.VISIBLE);
@@ -84,17 +85,17 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
             chkSports.setChecked(false);
         }
 
-        RadioGroup rgNewsDesk = (RadioGroup) findViewById(R.id.rdgNewsDesk);
+        RadioGroup rgNewsDesk = (RadioGroup) findViewById(R.id.rdgNewsDesks);
         rgNewsDesk.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // make the news desk checkboxes appear and disappear depending on whether
-                // they click the "All depts." or "Select depts." radio buttons
+                // make the news desk checkboxes appear or disappear depending on whether
+                // they click the "All news desks" or "Select news desks" radio buttons
                 CheckBox chkArts = (CheckBox) findViewById(R.id.chkArts);
                 CheckBox chkFashionAndStyle = (CheckBox) findViewById(R.id.chkFashionAndStyle);
                 CheckBox chkSports = (CheckBox) findViewById(R.id.chkSports);
                 RadioButton radioButton = (RadioButton) findViewById(checkedId);
-                if (radioButton.getText().toString().equals(getResources().getString(R.string.all_values))) {
+                if (radioButton.getText().toString().equals(getResources().getString(R.string.all_news_desks))) {
                     chkArts.setVisibility(View.INVISIBLE);
                     chkFashionAndStyle.setVisibility(View.INVISIBLE);
                     chkSports.setVisibility(View.INVISIBLE);
@@ -107,7 +108,7 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
         });
     }
 
-    // attach to an onclick handler to show the date picker
+    // attach to an onclick handler to show the date picker for either the begin date or end date
     public void showTimePickerDialog(View v) {
         DatePickerFragment newFragment = new DatePickerFragment();
         Bundle args = new Bundle();
@@ -152,15 +153,15 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
     }
 
     public void saveSettings(View view) {
-        RadioButton rdbAll = (RadioButton) findViewById(R.id.rdbAll);
+        RadioButton rdbAllNewsDesks = (RadioButton) findViewById(R.id.rdbAllNewsDesks);
         CheckBox chkArts = (CheckBox) findViewById(R.id.chkArts);
         CheckBox chkFashionAndStyle = (CheckBox) findViewById(R.id.chkFashionAndStyle);
         CheckBox chkSports = (CheckBox) findViewById(R.id.chkSports);
 
-        if (!rdbAll.isChecked() && !chkArts.isChecked() && !chkFashionAndStyle.isChecked() && !chkSports.isChecked()) {
-            // if they selected "Select depts." but didn't actually select any departments
+        if (!rdbAllNewsDesks.isChecked() && !chkArts.isChecked() && !chkFashionAndStyle.isChecked() && !chkSports.isChecked()) {
+            // if they selected "Select news desks", they also need to actually select some news desks
             FragmentManager fm = getSupportFragmentManager();
-            AlertDialogFragment alertDialog = AlertDialogFragment.newInstance("News Article Search Settings", "If you select 'Select Depts.' instead of 'All depts.', you also need to select which departments you want to search.");
+            AlertDialogFragment alertDialog = AlertDialogFragment.newInstance("News Article Search Settings", "If you select 'Select news desks' instead of 'All news desks', you also need to select which news desks you want to search.");
             alertDialog.show(fm, "fragment_alert");
         } else {
             // send the edited settings back to the main activity
@@ -171,7 +172,7 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
             } else {
                 data.putExtra("sortOrder", "oldest");
             }
-            if (rdbAll.isChecked()) {
+            if (rdbAllNewsDesks.isChecked()) {
                 data.putExtra("allNewsDeskValues", true);
             } else {
                 data.putExtra("allNewsDeskValues", false);

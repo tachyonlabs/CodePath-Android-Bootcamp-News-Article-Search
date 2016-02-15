@@ -2,7 +2,7 @@
 
 News Article Search is an android app that allows a user to search for images on web using simple filters. The app utilizes [New York Times Search API](http://developer.nytimes.com/docs/read/article_search_api_v2).
 
-Time spent: **X** hours spent in total
+Time spent: Many hours spent in total :-)
 
 ## User Stories
 
@@ -30,7 +30,6 @@ The following **bonus** features are implemented:
 The following **additional** features are implemented:
 
 * [x] Placeholder NYT "T" logo image in grid for articles that have no thumbnails
-* [x] Opening "The New York Times Article Search" graphic so you don't just have a blank screen prior to searching
 * [x] User's **search filters are saved to and loaded from SharedPreferences**
 * [x] Alert dialog requiring users choosing Select news desk values (as opposed to All values) to also select the departments they want to search 
 
@@ -38,13 +37,13 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='http://tachyonlabs.com/miscimages/news_article_search.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+As the New York Times is very black and white in all its branding, and in the spirit of the old "What's black and white and red(read) all over?" newspaper riddle, I decided to make the app black and white with red as an accent color.
 
 ## Open-source libraries used
 

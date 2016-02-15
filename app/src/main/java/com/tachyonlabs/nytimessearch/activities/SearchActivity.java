@@ -97,18 +97,11 @@ public class SearchActivity extends AppCompatActivity {
     // Append more data into the adapter
     // This method probably sends out a network request and appends new data items to your adapter.
     public void customLoadMoreDataFromApi(int offset) {
-        // Send an API request to retrieve appropriate data using the offset value as a parameter.
-        // Deserialize API response and then construct new objects to append to the adapter
-        // Add the new objects to the data source for the adapter
-        //items.addAll(moreItems);
-        // For efficiency purposes, notify the adapter of only the elements that got changed
-        // curSize will equal to the index of the first element inserted because the list is 0-indexed
         fetchArticles(offset);
-        //int curSize = adapter.getItemCount();
-        //adapter.notifyItemRangeInserted(curSize, items.size() - 1);
     }
 
     public void getSharedPreferencesSettings() {
+        // get the saved user settings from SharedPreferences
         SharedPreferences mSettings = this.getSharedPreferences("Settings", 0);
         beginDate = mSettings.getString("beginDate", getResources().getString(R.string.earliest_datepicker_date));
         endDate = mSettings.getString("endDate", getResources().getString(R.string.today));
@@ -200,8 +193,6 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -211,6 +202,7 @@ public class SearchActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            // pass current user settings to the Settings activity
             Intent intent = new Intent(SearchActivity.this, SettingsActivity.class);
             intent.putExtra("beginDate", beginDate);
             intent.putExtra("endDate", endDate);
@@ -230,6 +222,7 @@ public class SearchActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // REQUEST_CODE is defined above
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            // save edited user settings to SharedPreferences
             sortOrder = data.getExtras().getString("sortOrder");
             beginDate = data.getExtras().getString("beginDate");
             endDate = data.getExtras().getString("endDate");
@@ -251,6 +244,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public String convertToday(String dateString) {
+        // begin and end dates are saved as either a past date, or "Today" so as to advance with
+        // each day, but when sending the request to the API Today gets converted to the actual date
         if (dateString.equals(getResources().getString(R.string.today))) {
             Calendar c = Calendar.getInstance();
             Date date = c.getTime();
@@ -259,6 +254,5 @@ public class SearchActivity extends AppCompatActivity {
         } else {
             return dateString;
         }
-
     }
 }

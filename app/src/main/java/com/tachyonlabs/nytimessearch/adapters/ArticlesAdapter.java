@@ -96,7 +96,7 @@ public class ArticlesAdapter extends
         tvTitle.setText(article.getHeadline());
 
         // populate the thumbnail image
-        // remotely download
+        // remotely download, or use the placeholder if there is no thumbnail
         ImageView ivImage = viewHolder.ivImage;
         String thumbnail = article.getThumbnail();
         if (!TextUtils.isEmpty(thumbnail)) {

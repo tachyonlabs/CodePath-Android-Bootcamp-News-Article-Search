@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 public class AlertDialogFragment extends android.support.v4.app.DialogFragment {
     // based on http://guides.codepath.com/android/Using-DialogFragment
+    // displays a title, message, and OK button
     public AlertDialogFragment() {
         // Empty constructor required for DialogFragment
     }

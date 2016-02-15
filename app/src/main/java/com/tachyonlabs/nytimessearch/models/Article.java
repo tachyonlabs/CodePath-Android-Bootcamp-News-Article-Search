@@ -38,7 +38,7 @@ public class Article implements Serializable {
                 this.thumbnail = "";
             }
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
     }
     public static ArrayList<Article> fromJSONArray(JSONArray array) {

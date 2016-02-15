@@ -10,7 +10,7 @@ import com.tachyonlabs.nytimessearch.R;
 import com.tachyonlabs.nytimessearch.models.Article;
 
 public class ArticleActivity extends AppCompatActivity {
-
+    // load the selected article into the WebView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
